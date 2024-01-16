@@ -94,6 +94,21 @@ pub async fn run() {
     });
 }
 
+#[derive(Debug)]
+pub enum Toggle {
+    A,
+    B,
+}
+
+impl Toggle {
+    pub fn toggle(&mut self) {
+        *self = match self {
+            Toggle::A => Toggle::B,
+            Toggle::B => Toggle::A,
+        }
+    }
+}
+
 struct State {
     surface: wgpu::Surface,
     device: wgpu::Device,
@@ -106,6 +121,7 @@ struct State {
     window: Window,
     render_pipeline: wgpu::RenderPipeline,
     background: wgpu::Color,
+    toggle: Toggle,
 }
 
 impl State {
@@ -238,6 +254,7 @@ impl State {
                 b: 0.3,
                 a: 1.0,
             },
+            toggle: Toggle::A,
         }
     }
 
@@ -264,6 +281,15 @@ impl State {
                     a: 1.0,
                 };
             }
+            WindowEvent::KeyboardInput {
+                input:
+                    KeyboardInput {
+                        state: ElementState::Pressed,
+                        virtual_keycode: Some(VirtualKeyCode::Space),
+                        ..
+                    },
+                ..
+            } => self.toggle.toggle(),
             _ => (),
         };
 
